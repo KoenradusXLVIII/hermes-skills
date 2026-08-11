@@ -5,12 +5,19 @@ version: 1.0.0
 author: joost
 license: MIT
 platforms: [linux, macos, windows]
+prerequisites:
+  commands: [python3]
+required_environment_variables:
+  - name: DIRIGERA_HOST
+    prompt: IP address of your DIRIGERA hub on the local LAN (e.g. 192.168.1.x)
+    help: "Check your router's device list or the IKEA Home smart app if unsure."
+  - name: DIRIGERA_TOKEN
+    prompt: DIRIGERA access token
+    help: "Not something you type from memory - run `scripts/pair.py <hub-ip>` first (press the hub's physical Action button when prompted), then paste the token it prints."
 metadata:
   hermes:
     tags: [Smart-Home, IKEA, DIRIGERA, Lights, IoT, Automation]
     homepage: https://github.com/Leggin/dirigera
-prerequisites:
-  commands: [python3]
 ---
 
 # IKEA DIRIGERA CLI
