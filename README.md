@@ -19,6 +19,7 @@ hermes skills install KoenradusXLVIII/hermes-skills/radicale-calendar
 | Skill | Description |
 |---|---|
 | [`radicale-calendar`](skills/radicale-calendar/SKILL.md) | Check, create, reschedule, and delete calendar appointments via Radicale (self-hosted CalDAV). |
+| [`ikea-dirigera`](skills/ikea-dirigera/SKILL.md) | Control IKEA smart lights and scenes via a DIRIGERA hub. |
 
 ---
 
