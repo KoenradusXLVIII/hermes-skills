@@ -19,3 +19,7 @@ hermes skills install KoenradusXLVIII/hermes-skills/radicale-calendar
 | Skill | Description |
 |---|---|
 | [`radicale-calendar`](skills/radicale-calendar/SKILL.md) | Check, create, reschedule, and delete calendar appointments via Radicale (self-hosted CalDAV). |
+
+---
+
+If a skill here saved you some time, [☕ buy me a coffee](https://buymeacoffee.com/joostverberk).
