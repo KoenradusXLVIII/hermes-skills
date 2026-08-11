@@ -5,6 +5,15 @@ version: 1.0.0
 author: joost
 license: MIT
 platforms: [linux, macos, windows]
+required_environment_variables:
+  - name: RADICALE_URL
+    prompt: Base URL of your Radicale server (e.g. https://calendar.example.com/)
+    help: "The CalDAV root URL Radicale serves from - same one you'd enter in any CalDAV client."
+  - name: RADICALE_USERNAME
+    prompt: Radicale account username
+  - name: RADICALE_PASSWORD
+    prompt: Radicale account password
+    help: "Basic auth password (or an app password, if Radicale sits behind a reverse proxy that enforces one)."
 metadata:
   hermes:
     tags: [Calendar, CalDAV, Radicale, Scheduling]
