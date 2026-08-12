@@ -42,6 +42,12 @@ Script and skill docs live together in this one directory (venv, `.env`,
 `scripts/`) rather than split across separate tool/doc paths - keeps the
 whole thing self-contained and easy to relocate.
 
+Also set `RADICALE_TIMEZONE` in `.env` to your own IANA timezone name
+(e.g. `Europe/Amsterdam`, `America/New_York`) - optional, but strongly
+recommended. Without it, every returned timestamp stays in UTC; with it,
+the CLI converts start/end to your local time before you ever see it. See
+Rule 2b below for why this matters more than it sounds like it should.
+
 ## When to Use
 
 - "What's on my calendar [today / this week / on X date]?"
@@ -144,6 +150,18 @@ than leaving it set.
 2. **Always include a timezone-aware or explicit local ISO 8601 timestamp**
    for `--start`/`--end`. If a time is given without a date, resolve the
    actual date before calling anything (check today's date, don't guess).
+   A naive local timestamp on create is correctly converted to UTC for
+   storage.
+2b. **Returned `start`/`end` values are already in local time if
+   `RADICALE_TIMEZONE` is set - no manual conversion needed.** The CLI
+   itself converts every returned timestamp before you ever see it; just
+   read the value as-is. If `RADICALE_TIMEZONE` is unset, values stay in
+   UTC with an explicit offset (e.g. `12:00:00+00:00`) - in that case,
+   either mention you're reporting UTC when speaking a time to the user,
+   or (better) go set `RADICALE_TIMEZONE` in `.env` so this stops being a
+   manual thing to remember. Don't try to convert a timestamp "by hand"
+   from what you assume the user's timezone is - that's exactly the
+   failure mode this setting exists to remove.
 3. **Get the `uid` from `list-events` or `create-event`'s own output**
    before rescheduling/updating/deleting - don't guess or invent one.
 4. **If only one calendar exists**, commands default to it and no
