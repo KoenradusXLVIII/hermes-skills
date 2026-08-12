@@ -21,9 +21,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import caldav
 
@@ -92,6 +94,36 @@ def _parse_date(value: str) -> date:
     return date.fromisoformat(value)
 
 
+def _display_tz() -> ZoneInfo | None:
+    """Return the configured display timezone (RADICALE_TIMEZONE, an IANA
+    name like "Europe/Amsterdam" or "America/New_York"), or None if unset.
+
+    None means start/end stay exactly as Radicale returns them (UTC, with
+    an explicit +00:00 offset) - honest and unambiguous, just not
+    convenient to read at a glance. Set RADICALE_TIMEZONE once during
+    setup so a caller (human or model) never has to convert this by hand -
+    relying on a caller to always remember to do that conversion correctly
+    is exactly the kind of thing that silently goes wrong once.
+    """
+    tz_name = os.environ.get("RADICALE_TIMEZONE")
+    return ZoneInfo(tz_name) if tz_name else None
+
+
+def _format_dt(dt: date | datetime) -> str:
+    """Format a start/end value for JSON output.
+
+    Converts timezone-aware datetimes to RADICALE_TIMEZONE if configured;
+    leaves all-day events (plain `date`, no time component to convert) and
+    naive datetimes (shouldn't occur for a properly stored timed event, but
+    nothing to convert against if it does) untouched.
+    """
+    if isinstance(dt, datetime) and dt.tzinfo is not None:
+        tz = _display_tz()
+        if tz is not None:
+            dt = dt.astimezone(tz)
+    return dt.isoformat()
+
+
 def _event_json(event) -> dict:
     comp = event.icalendar_component
     dtstart = comp.get("dtstart")
@@ -101,10 +133,10 @@ def _event_json(event) -> dict:
         "uid": str(comp.get("uid")),
         "summary": str(comp.get("summary", "")),
         # .dt is a `date` for --all-day events, `datetime` otherwise - both
-        # have .isoformat(), so this stays correct either way (a bare
-        # "YYYY-MM-DD" for all-day, full timestamp for timed events).
-        "start": dtstart.dt.isoformat() if dtstart else None,
-        "end": dtend.dt.isoformat() if dtend else None,
+        # are handled by _format_dt (a bare "YYYY-MM-DD" for all-day, full
+        # timestamp - converted to RADICALE_TIMEZONE if set - otherwise).
+        "start": _format_dt(dtstart.dt) if dtstart else None,
+        "end": _format_dt(dtend.dt) if dtend else None,
         "location": str(comp.get("location", "")) or None,
         "description": str(comp.get("description", "")) or None,
         "calendar": event.parent.get_display_name(),
